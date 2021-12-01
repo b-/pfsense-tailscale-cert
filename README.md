@@ -1,5 +1,9 @@
 # pfsense-import-certificate
-Script to import an SSL certificate into a running pfsense system
+Script to import an SSL certificate into a running pfsense system.
+
+Use this to automate deploying letsencrypt certificates to your pfsense firewalls from your central letsencrypt managment system.
+
+Using opnsense, see repo at https://github.com/pluspol-interactive/opnsense-import-certificate
 
 ## usage
 
