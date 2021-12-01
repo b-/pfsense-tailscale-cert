@@ -83,12 +83,12 @@ foreach ($a_cert as $existing_cert) {
 $a_cert[] = $cert;
 
 // Write out the updated configuration
-write_config();
+write_config("Save new certificate config, from pfsense-import-certificate.php");
 
 // Assuming that all worked, we now need to set the new certificate for use in the GUI
 $config['system']['webgui']['ssl-certref'] = $cert['refid'];
 
-write_config();
+write_config("Set new certificate as active for webgui, from pfsense-import-certificate.php");
 
 log_error(gettext("webConfigurator configuration has changed. Restarting webConfigurator."));
 send_event("service restart webgui");
