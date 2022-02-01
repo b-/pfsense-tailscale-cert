@@ -3,6 +3,8 @@ Script to import an SSL certificate into a running pfsense system, set the webui
 
 Use this to automate deploying letsencrypt certificates to your pfsense firewalls from your central letsencrypt managment system.
 
+Script will delete old unused certificates added by the script when loading a new certificate.
+
 Using opnsense, see repo at https://github.com/pluspol-interactive/opnsense-import-certificate
 
 ## usage
