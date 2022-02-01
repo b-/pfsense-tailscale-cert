@@ -79,18 +79,41 @@ foreach ($a_cert as $existing_cert) {
 	}
 }
 
+
 // Append the final certificate
 $a_cert[] = $cert;
 
 // Write out the updated configuration
 write_config("Save new certificate config, from pfsense-import-certificate.php");
+sleep(3); //sleep to space out the write_config calls so they show distinctly
 
 // Assuming that all worked, we now need to set the new certificate for use in the GUI
 $config['system']['webgui']['ssl-certref'] = $cert['refid'];
 
 write_config("Set new certificate as active for webgui, from pfsense-import-certificate.php");
+sleep(3); //sleep to space out the write_config calls
 
 log_error(gettext("webConfigurator configuration has changed. Restarting webConfigurator."));
 send_event("service restart webgui");
 
 echo "Completed! New certificate installed.\r\n";
+
+// Delete unused certificates added by this script
+
+$a_cert =& $config['cert'];
+$name = '';
+foreach ($a_cert as $cid => $acrt) {
+  echo "Eval Cert for delete: $cid\r\n";
+  if (!cert_in_use($acrt['refid']) and preg_match("/pfsense-import-certificate\.php/",$acrt['descr'])) {
+    echo "-->Delete this certificate\r\n";
+    // cert not in use and matches description pattern
+    $name.=htmlspecialchars($acrt['descr'])." ";
+    unset($a_cert[$cid]);
+  }
+}
+
+if($name){
+        echo "Deleted old certificates: save the config.\r\n";
+        $savemsg = sprintf(gettext("Deleted certificate: %s , from pfsense-import-certificate.php"), $name);
+        write_config($savemsg);
+}
