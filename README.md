@@ -5,6 +5,12 @@ Use this to automate deploying letsencrypt certificates to your pfsense firewall
 
 Script will delete old unused certificates added by the script when loading a new certificate.
 
+As of 12/4/2023 commit, supports updating Unbound and Captive Portal automatically also.
+
+Captive Portal seems to require that the Lets Encrypt CA be added to PfSense for it to work.  
+Probably because the Captive Portal prevents clients from checking the CA themselves.  Add it
+manually, and remember to updated it in Sept 2025 before the current one expires.
+
 Using opnsense, see repo at https://github.com/pluspol-interactive/opnsense-import-certificate
 
 ## usage
