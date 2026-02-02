@@ -5,11 +5,16 @@ Use this to automate deploying letsencrypt certificates to your pfsense firewall
 
 Script will delete old unused certificates added by the script when loading a new certificate.
 
-As of 12/4/2023 commit, supports updating Unbound and Captive Portal automatically also.
+12/4/2023 commit, supports updating Unbound and Captive Portal automatically also.
+08/27/2025 commit, supports updating HAProxy ssl offload cert.  Thanks chris-shaw-2011
+02/02/2026 commit, support updating intermediate certs.
 
-Captive Portal seems to require that the Lets Encrypt CA be added to PfSense for it to work.  
-Probably because the Captive Portal prevents clients from checking the CA themselves.  Add it
-manually, and remember to updated it in Sept 2025 before the current one expires.
+Currently supports updating certs for
+- Web UI
+- Unbound
+- Captive Portal
+- HAProxy
+
 
 Using opnsense, see repo at https://github.com/pluspol-interactive/opnsense-import-certificate
 
@@ -20,7 +25,7 @@ Using opnsense, see repo at https://github.com/pluspol-interactive/opnsense-impo
 
 
 ```
-Usage: php pfsense-import-certificate.php /path/to/cert.pem /path/to/private/privkey.pem
+Usage: php pfsense-import-certificate.php /path/to/cert.pem /path/to/private/privkey.pem /path/to/chain.pem
 ```
 
 ## automation example with dehydrated acme
@@ -28,8 +33,12 @@ Usage: php pfsense-import-certificate.php /path/to/cert.pem /path/to/private/pri
 ```
 ./dehydrated -c -f config-lan
 # push cert to pfsense
-scp pfsense-import-certificate.php certs/yourhost.domain.tld/privkey.pem certs/yourhost.domain.tld/fullchain.pem root@yourpfsensehost: \
-&& ssh root@yourpfsensehost 'php pfsense-import-certificate.php /root/fullchain.pem /root/privkey.pem'
+scp pfsense-import-certificate.php \
+certs/yourhost.domain.tld/cert.pem \
+certs/yourhost.domain.tld/privkey.pem \
+certs/yourhost.domain.tld/chain.pem \
+ root@yourpfsensehost: \
+&& ssh root@yourpfsensehost 'php pfsense-import-certificate.php /root/cert.pem /root/privkey.pem /root/chain.pem'
 ```
 
 ## Using dehyrdated.default.sh
@@ -42,10 +51,13 @@ In the "function deploy_cert" section, use something like this to deploy certifi
       scp ~/pfsense-import-certificate/pfsense-import-certificate.php root@${DOMAIN}:./
 
       #copy the certs
-      scp ~/letsencrypt/dehydrated/certs/${DOMAIN}/cert.pem ~/letsencrypt/dehydrated/certs/${DOMAIN}/privkey.pem root@${DOMAIN}:./
+      scp ~/letsencrypt/dehydrated/certs/${DOMAIN}/cert.pem \
+          ~/letsencrypt/dehydrated/certs/${DOMAIN}/privkey.pem \
+          ~/letsencrypt/dehydrated/certs/${DOMAIN}/chain.pem \
+          root@${DOMAIN}:./
 
       #install the certs
-      ssh root@${DOMAIN} "php ./pfsense-import-certificate.php ./cert.pem ./privkey.pem"
+      ssh root@${DOMAIN} "php ./pfsense-import-certificate.php ./cert.pem ./privkey.pem ./chain.pem"
     fi
 
 ```
